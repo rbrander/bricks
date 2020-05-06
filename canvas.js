@@ -3,18 +3,18 @@
 const canvas = document.getElementById('canvas')
 const ctx = canvas.getContext('2d')
 
-const update = (tick) => {}
+const PADDLE_HEIGHT = 25 // pixels
+
+const update = (tick) => {
+  updateGame(tick)
+}
+
 const draw = (tick) => {
+  // Clear background
   ctx.fillStyle = '#000030'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  // display mouse info
-  if (mouseState.x !== undefined && mouseState.y !== undefined) {
-    ctx.fillStyle = 'white'
-    ctx.font = '30px Arial'
-    ctx.textBaseline = 'top'
-    ctx.fillText(`Mouse: (${mouseState.x}, ${mouseState.y}) isDown: ${mouseState.button.isDown}`, 20, 20)
-  }
+  drawGame(tick)
 }
 
 const loop = (tick) => {
