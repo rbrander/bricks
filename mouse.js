@@ -17,8 +17,10 @@ const onMouseMove = (e) => {
 const onMouseDown = (e) => {
   mouseState.button.isDown = true
 }
+
 const onMouseUp = (e) => {
   mouseState.button.isDown = false
+  mouseState.button.clicked = true
 }
 
 const initMouse = () => {
