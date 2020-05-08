@@ -24,17 +24,19 @@ const gameState = {
     yVel: -5
   },
   bricks: [],
-  score: 0
+  score: 0,
+  isRunning: true
 }
 
-const updateGame = (tick) => {
+
+const updatePaddle = (tick) => {
   // update paddle position based on mouse position
   if (mouseState.x !== undefined) {
     gameState.paddle.x = mouseState.x
   }
+}
 
-  // Clone the ball object and update it, prevBall is used for hit detection
-  const prevBall = Object.assign({}, gameState.ball)
+const updateBall = (tick) => {
   if (gameState.ball.isLaunched) {
     // move the ball
     gameState.ball.x += gameState.ball.xVel
@@ -68,6 +70,8 @@ const updateGame = (tick) => {
       } else {
         // reset the ball by reset the launched status
         gameState.ball.isLaunched = false
+        // game over
+        gameState.isRunning = false;
       }
     }
   } else {
@@ -79,7 +83,9 @@ const updateGame = (tick) => {
       gameState.ball.isLaunched = true
     }
   }
+}
 
+const updateBricks = (tick, prevBall) => {
   // remove bricks that the ball hits
   const collidedBricks = gameState.bricks.filter(brick => brick.collidesWith(gameState.ball))
   if (collidedBricks.length > 0) {
@@ -99,6 +105,16 @@ const updateGame = (tick) => {
     }
     // update the bricks to include only the bricks that are not colliding
     gameState.bricks = gameState.bricks.filter(brick => !brick.collidesWith(gameState.ball))
+  }
+}
+
+const updateGame = (tick) => {
+  if (gameState.isRunning) {
+    updatePaddle(tick)
+    // get a clone of the ball's previous position for hit detection
+    const ballBeforeUpdate = Object.assign({}, gameState.ball)
+    updateBall(tick)
+    updateBricks(tick, ballBeforeUpdate)
   }
 }
 
@@ -127,11 +143,29 @@ const drawScore = (tick) => {
   ctx.fillText(`Score: ${gameState.score}`, 20, 20)
 }
 
+const drawGameOver = (tick) => {
+  // center text horiztonally and vertically
+  // two lines, first "Game Over!", second "Score: 000000"
+  ctx.font = '40px monospace'
+  ctx.textBaseline = 'bottom'
+  ctx.textAlign = 'center'
+  ctx.fillStyle = 'white';
+  const x = canvas.width / 2
+  const y = canvas.height / 2
+  ctx.fillText('Game Over!', x, y)
+  ctx.textBaseline = 'top'
+  ctx.fillText(`Score: ${gameState.score}`, x, y)
+}
+
 const drawGame = (tick) => {
-  drawBricks(tick)
-  drawPaddle(tick)
-  drawBall(tick)
-  drawScore(tick)
+  if (gameState.isRunning) {
+    drawBricks(tick)
+    drawPaddle(tick)
+    drawBall(tick)
+    drawScore(tick)
+  } else {
+    drawGameOver(tick)
+  }
 }
 
 const initGame = () => {
