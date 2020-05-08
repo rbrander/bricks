@@ -6,6 +6,7 @@ const BRICK_WIDTH_PADDING = 20
 const BRICK_WIDTH = 100
 const BRICK_HEIGHT_PADDING = 10
 const BRICK_HEIGHT = 25
+const POINTS_PER_BRICK = 100
 
 const gameState = {
   paddle: {
@@ -22,7 +23,8 @@ const gameState = {
     xVel: 5,
     yVel: -5
   },
-  bricks: []
+  bricks: [],
+  score: 0
 }
 
 const updateGame = (tick) => {
@@ -81,6 +83,7 @@ const updateGame = (tick) => {
   // remove bricks that the ball hits
   const collidedBricks = gameState.bricks.filter(brick => brick.collidesWith(gameState.ball))
   if (collidedBricks.length > 0) {
+    gameState.score += collidedBricks.length * POINTS_PER_BRICK
     // In most cases, there will ever only be 1 collision at a time, but in theory there
     // could be many. To simplify this process, onyl one will be processed, and the rest should be
     // processed in the following frames
@@ -118,10 +121,17 @@ const drawBricks = (tick) => {
   gameState.bricks.forEach(brick => brick.draw(tick))
 }
 
+const drawScore = (tick) => {
+  ctx.font = '30px monospace'
+  ctx.textBaseline = 'top'
+  ctx.fillText(`Score: ${gameState.score}`, 20, 20)
+}
+
 const drawGame = (tick) => {
   drawBricks(tick)
   drawPaddle(tick)
   drawBall(tick)
+  drawScore(tick)
 }
 
 const initGame = () => {
